@@ -90,3 +90,9 @@ That's it you are ready to make calls on service A or service B through the brow
 - Change services to return and report errors randomly
 - Automate grafana manual configuration steps
 - Add built in container that will make requests to the endpoints
+
+## Challenges that will come for us if we ever want to use a stack like this
+
+- How do you rotate loki logs
+- How do you run this in kubernetes?
+- How do you work with retries
