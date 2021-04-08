@@ -1,0 +1,78 @@
+version: "3"
+
+networks: 
+  tracing-workshop:
+
+services:
+  loki:
+    image: grafana/loki:2.0.0
+    ports:
+      - 3100:3100
+    command: -config.file=/etc/loki/local-config.yaml
+    networks:
+      - tracing-workshop
+  grafana:
+    image: grafana/grafana
+    ports:
+      - 3000:3000
+    networks:
+      - tracing-workshop
+  mongo:
+    image: mongo:4.4.4-bionic
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=mongoadmin
+      - MONGO_INITDB_ROOT_PASSWORD=secret
+    ports:
+      - 27017:27017
+    networks:
+      - tracing-workshop
+  jaeger:
+    image: jaegertracing/all-in-one:1.22
+    environment:
+      - COLLECTOR_ZIPKIN_HTTP_PORT=9411
+    ports:
+      - 5775:5775/udp
+      - 6831:6831/udp
+      - 6832:6832/udp
+      - 5778:5778
+      - 16686:16686
+      - 14268:14268
+      - 14250:14250
+      - 9411:9411
+    networks:
+      - tracing-workshop
+  servicea:
+    build: ./servicea
+    environment:
+      - MONGO_HOST=mongo
+      - JAEGER_HOST=jaeger
+      - JAEGER_PORT=14268
+      - SERVICE_B=serviceb
+      - SERVICE_B_PORT=3002
+      - LOKI_HOST=loki
+      - LOKI_PORT=3100
+    ports:
+    - 3001:3001
+    depends_on:
+      - mongo
+      - jaeger
+      - serviceb
+      - loki
+    networks:
+      - tracing-workshop
+  serviceb:
+    build: ./serviceb
+    environment:
+      - MONGO_HOST=mongo
+      - JAEGER_HOST=jaeger
+      - JAEGER_PORT=14268
+      - LOKI_HOST=loki
+      - LOKI_PORT=3100
+    ports:
+    - 3002:3002
+    depends_on:
+      - mongo
+      - jaeger
+      - loki
+    networks:
+      - tracing-workshop
