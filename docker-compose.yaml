@@ -17,6 +17,8 @@ services:
       - 3000:3000
     networks:
       - tracing-workshop
+    volumes:
+      - ./grafana/datasources:/etc/grafana/provisioning/datasources
   mongo:
     image: mongo:4.4.4-bionic
     environment:

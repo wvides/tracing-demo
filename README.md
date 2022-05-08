@@ -56,30 +56,7 @@ http://localhost:16686
 
 ```
 
-### Manual steps
-
-I'll automate this later
-
-1. Go to http//:localhost:3000 and login with user: admin and password: admin
-2. Go to configuration on the left bar and
-
-- Add a Loki datasource, set the URL as http://loki:3100 leave everything else as is and click the button `Save & test`
-- Add a Jaeger datasource, set the URL as http://jaeger:16686 leave everything else as is and click the button `Save & test`
-
-3. Add a derived field by going to Datasources -> Select loki -> Scroll down to the Derived fields section and add the configuration for the following fields as shown in the image below
-
-- Name: `span_id`
-- Regex: `\"span_id\"\:\"(\w+)\"`
-- Query: `${__value.raw}`
-- Internal link enabled and select the jaeger connection
-
-![derived-fields](./images/derived-fields.png)
-
-As you can see in the image you can use the following log sample to validate your regex
-
-```
-{"job": "service-b","span_id": "5e8bcd4232d73bd","level": "info","message": "GET, /"}
-```
+## Trying it out
 
 That's it you are ready to make calls on service A or service B through the browser or postman, you will be able to see very basic and simple tracing if you go in Grafana to the explore section on the left of the web ui, you can run queries as shown in the image below to filter logs, due to the derived fields configuration we defined Grafana will be able to identify the spanid and to link it with the jaeger trace
 
@@ -88,8 +65,7 @@ That's it you are ready to make calls on service A or service B through the brow
 ## TODO
 
 - Change services to return and report errors randomly
-- Automate grafana manual configuration steps
-- Add built in container that will make requests to the endpoints
+- Add built in container that will make requests to the endpoints (using bombardier perhaps)
 
 ## Challenges that will come for us if we ever want to use a stack like this
 
